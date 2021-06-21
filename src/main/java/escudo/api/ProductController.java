@@ -30,13 +30,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postProduct(@AuthenticationPrincipal UserDetails details,
+    public Product postProduct(@AuthenticationPrincipal UserDetails details,
                                             @RequestBody Product product) {
         Buyer buyer = buyerRepo.findByUsername(details.getUsername());
         product.setBuyer(buyer);
         try {
-            productRepo.save(product);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return productRepo.save(product);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Product with this name already exists!", e);
         }
