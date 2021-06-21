@@ -16,9 +16,13 @@ public class Buyer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
+
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.REMOVE)
+    private List<Product> products;
 
     public Buyer(String username, String password) {
         this.username = username;
