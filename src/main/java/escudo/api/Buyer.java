@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class Buyer {
     private String password;
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.REMOVE)
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     public Buyer(String username, String password) {
         this.username = username;
