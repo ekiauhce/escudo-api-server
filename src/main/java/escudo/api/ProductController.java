@@ -15,29 +15,25 @@ import java.util.List;
 @RequestMapping("products")
 public class ProductController {
 
-    private final ProductRepository productRepo;
-    private final BuyerRepository buyerRepo;
+    private final EscudoService escudoService;
 
-    @Autowired
-    public ProductController(ProductRepository productRepo, BuyerRepository buyerRepo) {
-        this.productRepo = productRepo;
-        this.buyerRepo = buyerRepo;
+    public ProductController(EscudoService escudoService) {
+        this.escudoService = escudoService;
     }
 
     @GetMapping
     public List<Product> getProducts(@AuthenticationPrincipal UserDetails details) {
-        return productRepo.findProductsByBuyerUsername(details.getUsername());
+        return escudoService.getProducts(details.getUsername());
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Product postProduct(@AuthenticationPrincipal UserDetails details,
-                                            @RequestBody Product product) {
-        Buyer buyer = buyerRepo.findByUsername(details.getUsername());
-        product.setBuyer(buyer);
+                               @RequestBody Product product) {
         try {
-            return productRepo.save(product);
-        } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product with this name already exists!", e);
+            return escudoService.addNewProduct(product, details.getUsername());
+        } catch (DuplicateProductException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
     }
 }
