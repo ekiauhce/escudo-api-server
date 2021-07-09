@@ -21,26 +21,25 @@ public class SecurityController {
     }
 
     @PostMapping("register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Credentials register(@RequestBody Credentials credentials) {
+    public ResponseEntity<?> register(@RequestBody Credentials credentials) {
         try {
             Buyer buyer = new Buyer(credentials.getUsername(), encoder.encode(credentials.getPassword()));
             repo.save(buyer);
-            return credentials;
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this username already exists!", e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This username already exists!", e);
         }
     }
 
-    @GetMapping("login")
-    @ResponseStatus(HttpStatus.OK)
-    public Credentials login(@RequestBody Credentials credentials) {
+    @PostMapping("login")
+    public ResponseEntity<?> login(@RequestBody Credentials credentials) {
         Buyer buyer = repo.findByUsername(credentials.getUsername());
-        if (buyer == null || credentials.getPassword() == null ||
-                !encoder.matches(credentials.getPassword(), buyer.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (buyer == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "This username doesn't exist!");
         }
-
-        return credentials;
+        else if (!encoder.matches(credentials.getPassword(), buyer.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password incorrect");
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
