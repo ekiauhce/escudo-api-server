@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data
@@ -23,7 +22,7 @@ public class Purchase {
 
     private Double price;
 
-    private LocalDate madeAt;
+    private LocalDateTime madeAt;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
@@ -32,6 +31,6 @@ public class Purchase {
 
     @PrePersist
     public void madeAt() {
-        madeAt = LocalDate.now();
+        madeAt = LocalDateTime.now();
     }
 }
