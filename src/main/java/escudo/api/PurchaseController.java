@@ -28,4 +28,16 @@ public class PurchaseController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
         }
     }
+    @DeleteMapping("products/{productId}/purchases/{purchaseId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePurchase(@AuthenticationPrincipal UserDetails details,
+                               @PathVariable Long productId, @PathVariable Long purchaseId) {
+        try {
+            escudoService.deletePurchase(details.getUsername(), productId, purchaseId);
+        } catch (ProductNotFoundException | PurchaseNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
+        }
+    }
 }
