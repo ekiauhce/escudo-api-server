@@ -1,6 +1,7 @@
 package escudo.api;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class EscudoService {
 
     public Purchase addNewPurchase(String username, Long productId, Purchase purchase)
             throws ProductNotFoundException, IllegalAccessException {
+
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("No product with this id!"));
 
@@ -42,5 +44,22 @@ public class EscudoService {
         }
         purchase.setProduct(product);
         return purchaseRepo.save(purchase);
+    }
+
+    public void deletePurchase(String username, Long productId, Long purchaseId)
+            throws ProductNotFoundException, IllegalAccessException, PurchaseNotFoundException {
+
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("No product with this id!"));
+
+        if (!username.equals(product.getBuyer().getUsername())) {
+            throw new IllegalAccessException("You don't own this product!");
+        }
+
+        try {
+            purchaseRepo.deleteById(purchaseId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new PurchaseNotFoundException("No purchase with this id!", e);
+        }
     }
 }
