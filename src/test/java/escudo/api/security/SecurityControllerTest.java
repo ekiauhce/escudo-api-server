@@ -29,11 +29,11 @@ class SecurityControllerTest {
     private PasswordEncoder encoder;
 
     @Test
-    public void register_newUser_statusNoContent() throws Exception {
+    public void register_newUser_statusCreated() throws Exception {
         mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"user\", \"password\": \"pass\"}"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isCreated());
     }
 
     @Test
