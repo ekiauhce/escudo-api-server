@@ -1,7 +1,7 @@
 package escudo.api.security;
 
-import escudo.api.Buyer;
-import escudo.api.BuyerRepository;
+import escudo.api.entities.Buyer;
+import escudo.api.repositories.BuyerRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,12 @@
-package escudo.api;
+package escudo.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import escudo.api.entities.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

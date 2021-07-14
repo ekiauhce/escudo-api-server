@@ -1,6 +1,9 @@
-package escudo.api;
+package escudo.api.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import escudo.api.services.EscudoService;
+import escudo.api.exceptions.ProductNotFoundException;
+import escudo.api.entities.Purchase;
+import escudo.api.exceptions.PurchaseNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,13 +1,14 @@
 package escudo.api;
 
+import escudo.api.entities.Buyer;
+import escudo.api.entities.Product;
+import escudo.api.repositories.BuyerRepository;
+import escudo.api.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 class EscudoApiServerApplicationTests {

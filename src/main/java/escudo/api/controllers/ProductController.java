@@ -1,9 +1,9 @@
-package escudo.api;
+package escudo.api.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import escudo.api.exceptions.DuplicateProductException;
+import escudo.api.services.EscudoService;
+import escudo.api.entities.Product;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;

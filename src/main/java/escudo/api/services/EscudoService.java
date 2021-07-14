@@ -1,5 +1,14 @@
-package escudo.api;
+package escudo.api.services;
 
+import escudo.api.entities.Buyer;
+import escudo.api.entities.Product;
+import escudo.api.entities.Purchase;
+import escudo.api.exceptions.DuplicateProductException;
+import escudo.api.exceptions.ProductNotFoundException;
+import escudo.api.exceptions.PurchaseNotFoundException;
+import escudo.api.repositories.BuyerRepository;
+import escudo.api.repositories.ProductRepository;
+import escudo.api.repositories.PurchaseRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;

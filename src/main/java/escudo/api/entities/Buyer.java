@@ -1,4 +1,4 @@
-package escudo.api;
+package escudo.api.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

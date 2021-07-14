@@ -1,5 +1,10 @@
 package escudo.api;
 
+import escudo.api.controllers.ProductController;
+import escudo.api.entities.Buyer;
+import escudo.api.entities.Product;
+import escudo.api.repositories.BuyerRepository;
+import escudo.api.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

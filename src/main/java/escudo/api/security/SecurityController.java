@@ -1,7 +1,7 @@
 package escudo.api.security;
 
-import escudo.api.Buyer;
-import escudo.api.BuyerRepository;
+import escudo.api.entities.Buyer;
+import escudo.api.repositories.BuyerRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
