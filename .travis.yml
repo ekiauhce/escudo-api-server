@@ -1,1 +1,19 @@
+sudo: required
 language: java
+
+env:
+  global:
+    - secure: TCIgufCE+DmwnCMVfCgX9z/sJFnApPpVtF02yVbHyEV2AO8ehVqNqc0NYMguOd9ysmHJ4YXx/EteJPltajKvAFE/LOsnmdCLeRoMnpaX1Qa9+dRYj3lmX37rhADJyjVXsypm5ctiib29YFAUA6oyT3KwhJh06mI0/0+5vPrJhCBN3/SXNjSpScayciTCSKNx5uvZVENR8u5S0zX++xTelQgoTOM7yKVDnGzPQEvjYP7tMHrhX1KhP/joC9XfApXk7fCu0H8FeAuby8hQW0bPgy2cSueB+YHi0T6V+ksTHfwfQw8jXAMXekD/nR4/RXesYYBj2V6S3kpqeejySG8lq0evqDpMHmtWhOw2dEjcbmwBaadXpsQjZEoGF6XUSE2wi0wFBlAC/P/BVtUL2fPD/fhM6GwU8L5P3jiJHVfEMi8X4KLeSJgloGJimyhLWeu/q/Xspq4hHQc1fTS+5InSXMpUx7ZoemkS7YTKJNxivbS9rjJB3vPOsexOXUHcz3QDM5L0Mv6xVHLxGPZr8zXnxO4ljaIYk/8HET9P7ngL2ILQ2XkCRuycPCHaSlfYw6vMQSDeS20UK6dotagwJmmK09k9kT1z8l8nZHyPtKIBIsaWY7Kxgdaed+MtzqAmn98t9NCYLJM/u45DKRSXknZw2XfScBcc1dhUMPljN+HpdqI=
+    - secure: CpFhJkmbhZW6L13LW06j+5R1mOPFk7a9VkJJ+bmdY8pR9GgA5+Xqyw779SARu+61P6AmHdccsBmGRvRS1P8nBAcUkycX6G3rgLkzvzbixZpLajuMdOc07tSAcBLQ5ziS/NMBSdw2dEsIHFgRZlubgHuSopg38Aaj4cn7yGFsTkG7NPvmzCEfi1ZnnLYpqDkA6ZYhhyh6/gz92bEUz6TiqYDCI8atjYhlr4i4ZNI4S0z8c+vG87GK2opuNRTTMWFfrPLE9UH/xy8zYeIGX6UDM78KYc6mcR6CVIyQMpzVUD1oYZ/uChqq+RMskR97q8oIC1ta6UoceMX6LE4SoFBwZdz8KBHvwsKUJ3GsjZ1YNwOUo5jzvSLqAB9YS36bSUacQ69TWMZ2gdFKEh/qrYX0B9cvGWmGQw2A+8a7VULC42RF03wludhVEUpvVQA45T6FuYg9STKf6i58eStD6lYMLkkCenYCxRRfLrDxJR3SesowlDvjB1OXAmvUxr7KKSrRtXFM6ySiuUN5X6cdKRnXJYvn+h9+bKS+ik7PbXRTiT0nkw2OwYleW15lX/OAqR4BpI3KFeTWlO/Kglb/Jto77NxTvCgpy26PbJ8fUuFAlG1sWt9lJM6sdP9TwW3rscgSZrhizO45Gj2dtpxUEjiFa3RchYiMPYGJUUyGvfevQ8Y=
+
+services:
+  - docker
+
+before_deploy:
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+  - docker login --username="$HEROKU_USERNAME" --password="$HEROKU_API_KEY" registry.heroku.com
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: bash deploy_heroku.sh
