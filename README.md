@@ -15,3 +15,88 @@ App loads very slowly, because frontend and backend are deployed on different he
 8. User can see cost per day (CPD) between last purchase and new purchase, if he will add new purchase right now.
 9. User can see averge CPD for the particular product.
 10. User can see average lifespan for the particular product. Lifespan is a time period between two adjacent purchases.
+
+## API
+
+Method | Path | Response status codes | Auth
+| --- | --- | --- | --- |
+`POST` | `/register` | `CREATED` or `CONFLICT` | No
+`POST` |`/login` | `OK` or `UNAUTHORIZED` | No
+`POST` | `/products` | `CREATED` or `CONFLICT` | require
+`GET` | `/products` | `OK` | require |
+`POST` | `/products/:id/purchases` | `CREATED` or `NOT_FOUND` or `FORBIDDEN` | require
+`DELETE` | `products/:id/purchases/:id` | `NO_CONTENT` or `NOT_FOUND` or `FORBIDDEN` | require
+
+### Example payloads
+
+#### POST `/register` request body
+
+```json
+{ "username": "user", "password": "pass" }
+```
+
+#### POST `/login` request body
+```json
+{ "username": "user", "password": "pass" }
+```
+
+#### POST `/products` request body 
+```json
+{ "name": "t-shirt" }
+```
+
+#### POST `/products` response body
+```json
+{
+    "id": 1,
+    "name": "t-shirt",
+    "purchases": []
+}
+```
+
+#### GET `/products` response body
+```json
+[
+    {
+        "id": 1,
+        "name": "t-shirt",
+        "purchases": [
+            {
+                "id": 1,
+                "madeAt": "2021-06-15T11:59:19.273625",
+                "price": 950.0
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "cell phone plan",
+        "purchases": [
+            {
+                "id": 2,
+                "madeAt": "2021-06-20T13:28:30.350744",
+                "price": 350.0
+            },
+            {
+                "id": 3,
+                "madeAt": "2021-07-20T15:28:30.350744",
+                "price": 350.0
+            }
+        ]
+    }
+]
+```
+
+#### POST `/products/:id/purchases` request body
+```json
+{ "price" : 954.3 }
+```
+
+#### POST `/products/:id/purchases` response body
+```json
+{
+    "id": 1,
+    "madeAt": "2021-07-31T11:59:19.273625",
+    "price": 954.3
+}
+```
