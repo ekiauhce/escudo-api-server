@@ -1,4 +1,6 @@
 # escudo-api-server
+[![Build Status](https://travis-ci.com/ekiauhce/escudo-api-server.svg?branch=master)](https://travis-ci.com/ekiauhce/escudo-api-server)
+
 Application helps manage and analyze your repetitive expenses.
 
 App loads very slowly, because frontend and backend are deployed on different heroku dynos. When a request comes to the frontend, it needs time to wake up. The frontend then makes a request to the backend, which is also asleep.
