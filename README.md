@@ -14,4 +14,4 @@ App loads very slowly, because frontend and backend are deployed on different he
 7. User can delete a purchase.
 8. User can see cost per day (CPD) between last purchase and new purchase, if he will add new purchase right now.
 9. User can see averge CPD for the particular product.
-10. User can see average lifespan for the particular product. Lifespan is time between two adjacent purchases.
+10. User can see average lifespan for the particular product. Lifespan is a time period between two adjacent purchases.
