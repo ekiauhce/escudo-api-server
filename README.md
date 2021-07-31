@@ -1,6 +1,8 @@
 # escudo-api-server
 Application helps manage and analyze your repetitive expenses.
 
+App loads very slowly, because frontend and backend are deployed on different heroku dynos. When a request comes to the frontend, it needs time to wake up. The frontend then makes a request to the backend, which is also asleep.
+
 ## User story
 
 1. User can register.
