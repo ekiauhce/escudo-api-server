@@ -1,5 +1,7 @@
 package escudo.api.services;
 
+import escudo.api.dtos.NewProductDto;
+import escudo.api.dtos.NewPurchaseDto;
 import escudo.api.entities.Buyer;
 import escudo.api.entities.Product;
 import escudo.api.entities.Purchase;
@@ -12,10 +14,19 @@ import escudo.api.repositories.PurchaseRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
+@Transactional(rollbackFor = {
+    DuplicateProductException.class,
+    ProductNotFoundException.class,
+    PurchaseNotFoundException.class,
+    IllegalAccessException.class,
+})
 public class EscudoService {
 
     private final BuyerRepository buyerRepo;
@@ -28,22 +39,29 @@ public class EscudoService {
         this.purchaseRepo = purchaseRepo;
     }
 
-    public List<Product> getProducts(String username) {
-        return productRepo.findProductsByBuyerUsername(username);
+    public List<NewProductDto> getProducts(String username) {
+        return productRepo.findProductsByBuyerUsername(username).stream()
+            .map(NewProductDto::new)
+            .collect(Collectors.toList());
     }
 
-    public Product addNewProduct(Product product, String username) throws DuplicateProductException {
+
+    public NewProductDto addNewProduct(NewProductDto productDto, String username) throws DuplicateProductException {
         Buyer buyer = buyerRepo.findByUsername(username);
+        Product product = new Product(productDto);
         product.setBuyer(buyer);
+        
         try {
-            return productRepo.save(product);
+            product = productRepo.save(product);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateProductException("Product with this name already exists!", e);
         }
+
+        return new NewProductDto(product);
     }
 
-    public Purchase addNewPurchase(String username, Long productId, Purchase purchase)
-            throws ProductNotFoundException, IllegalAccessException {
+    public NewPurchaseDto addNewPurchase(String username, Long productId, NewPurchaseDto purchaseDto)
+        throws ProductNotFoundException, IllegalAccessException {
 
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("No product with this id!"));
@@ -51,12 +69,17 @@ public class EscudoService {
         if (!username.equals(product.getBuyer().getUsername())) {
             throw new IllegalAccessException("You don't own this product!");
         }
+
+        Purchase purchase = new Purchase(purchaseDto);
         purchase.setProduct(product);
-        return purchaseRepo.save(purchase);
+        purchase = purchaseRepo.save(purchase);
+
+        return new NewPurchaseDto(purchase);
     }
 
+
     public void deletePurchase(String username, Long productId, Long purchaseId)
-            throws ProductNotFoundException, IllegalAccessException, PurchaseNotFoundException {
+        throws ProductNotFoundException, IllegalAccessException, PurchaseNotFoundException {
 
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("No product with this id!"));

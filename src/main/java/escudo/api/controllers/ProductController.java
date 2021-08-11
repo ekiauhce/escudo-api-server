@@ -1,15 +1,22 @@
 package escudo.api.controllers;
 
-import escudo.api.exceptions.DuplicateProductException;
-import escudo.api.services.EscudoService;
-import escudo.api.entities.Product;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import escudo.api.dtos.NewProductDto;
+import escudo.api.exceptions.DuplicateProductException;
+import escudo.api.services.EscudoService;
+
 
 @RestController
 @RequestMapping("products")
@@ -22,18 +29,18 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getProducts(@AuthenticationPrincipal UserDetails details) {
+    public List<NewProductDto> getProducts(@AuthenticationPrincipal UserDetails details) {
         return escudoService.getProducts(details.getUsername());
     }
-
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product postProduct(@AuthenticationPrincipal UserDetails details,
-                               @RequestBody Product product) {
+    public NewProductDto postProduct(@AuthenticationPrincipal UserDetails details, 
+                                  @RequestBody NewProductDto productDto) {
         try {
-            return escudoService.addNewProduct(product, details.getUsername());
+            return escudoService.addNewProduct(productDto, details.getUsername());
         } catch (DuplicateProductException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
-    }
+    }    
 }

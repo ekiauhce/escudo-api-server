@@ -1,7 +1,7 @@
 package escudo.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import escudo.api.entities.Product;
+
+import escudo.api.dtos.NewPurchaseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Purchase {
 
+    public Purchase(NewPurchaseDto dto) {
+        this.price = dto.getPrice();
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +30,6 @@ public class Purchase {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
-    @JsonIgnore
     private Product product;
 
     @PrePersist

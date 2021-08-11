@@ -1,6 +1,7 @@
 package escudo.api.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import escudo.api.dtos.NewProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,17 @@ public class Product {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "buyer_id", referencedColumnName = "id")
-    @JsonIgnore
     private Buyer buyer;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Purchase> purchases = new ArrayList<>();
+
+    /**
+     * Construct entity from dto sended by web client
+     * dto includes name only
+     * @param dto
+     */
+    public Product(NewProductDto dto) {
+        this.name = dto.getName();
+    }
 }
