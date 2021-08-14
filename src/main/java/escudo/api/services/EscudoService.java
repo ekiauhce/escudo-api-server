@@ -2,6 +2,8 @@ package escudo.api.services;
 
 import escudo.api.dtos.NewProductDto;
 import escudo.api.dtos.NewPurchaseDto;
+import escudo.api.dtos.ProductListItemDto;
+import escudo.api.dtos.ProductPatchDto;
 import escudo.api.entities.Buyer;
 import escudo.api.entities.Product;
 import escudo.api.entities.Purchase;
@@ -39,9 +41,9 @@ public class EscudoService {
         this.purchaseRepo = purchaseRepo;
     }
 
-    public List<NewProductDto> getProducts(String username) {
+    public List<ProductListItemDto> getProducts(String username) {
         return productRepo.findProductsByBuyerUsername(username).stream()
-            .map(NewProductDto::new)
+            .map(ProductListItemDto::new)
             .collect(Collectors.toList());
     }
 
@@ -93,5 +95,34 @@ public class EscudoService {
         } catch (EmptyResultDataAccessException e) {
             throw new PurchaseNotFoundException("No purchase with this id!", e);
         }
+    }
+
+    public void updateProduct(String username, Long productId, ProductPatchDto productDto)
+        throws ProductNotFoundException, IllegalAccessException, DuplicateProductException {
+
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("No product with this id!"));
+
+        if (!username.equals(product.getBuyer().getUsername())) {
+            throw new IllegalAccessException("You don't own this product!");
+        }
+        try {
+            product.setName(productDto.getName());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateProductException("Product with this name already exists!", e);
+        }
+    }
+
+    public void deleteProduct(String username, Long productId) 
+        throws ProductNotFoundException, IllegalAccessException {
+        
+        Product product = productRepo.findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException("No product with this id"));
+
+        if (!username.equals(product.getBuyer().getUsername())) {
+            throw new IllegalAccessException("You don't own this product");
+        }
+
+        productRepo.delete(product);
     }
 }
