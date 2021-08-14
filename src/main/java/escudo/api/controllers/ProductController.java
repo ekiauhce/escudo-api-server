@@ -3,9 +3,13 @@ package escudo.api.controllers;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import escudo.api.dtos.NewProductDto;
+import escudo.api.dtos.ProductListItemDto;
+import escudo.api.dtos.ProductPatchDto;
 import escudo.api.exceptions.DuplicateProductException;
+import escudo.api.exceptions.ProductNotFoundException;
 import escudo.api.services.EscudoService;
 
 
@@ -29,7 +36,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<NewProductDto> getProducts(@AuthenticationPrincipal UserDetails details) {
+    public List<ProductListItemDto> getProducts(@AuthenticationPrincipal UserDetails details) {
         return escudoService.getProducts(details.getUsername());
     }
     
@@ -42,5 +49,33 @@ public class ProductController {
         } catch (DuplicateProductException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
-    }    
+    }
+
+    @PatchMapping("/{productId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void patchProduct(@AuthenticationPrincipal UserDetails details,
+                                          @PathVariable Long productId,
+                                          @RequestBody ProductPatchDto productDto) {
+        try {
+            escudoService.updateProduct(details.getUsername(), productId, productDto);
+        } catch (ProductNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
+        } catch (DuplicateProductException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }
+    }
+
+    @DeleteMapping("/{productId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@AuthenticationPrincipal UserDetails details, @PathVariable Long productId) {
+        try {
+            escudoService.deleteProduct(details.getUsername(), productId);
+        } catch (ProductNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
+        }
+    }
 }
