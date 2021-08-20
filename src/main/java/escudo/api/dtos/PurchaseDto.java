@@ -1,8 +1,5 @@
 package escudo.api.dtos;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
 import escudo.api.entities.Purchase;
 import lombok.Data;
 import lombok.NoArgsConstructor;
