@@ -3,7 +3,6 @@ package escudo.api.controllers;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import escudo.api.dtos.NewProductDto;
-import escudo.api.dtos.ProductListItemDto;
+import escudo.api.dtos.ProductDto;
 import escudo.api.dtos.ProductPatchDto;
 import escudo.api.exceptions.DuplicateProductException;
 import escudo.api.exceptions.ProductNotFoundException;
@@ -36,14 +34,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductListItemDto> getProducts(@AuthenticationPrincipal UserDetails details) {
+    public List<ProductDto> getProducts(@AuthenticationPrincipal UserDetails details) {
         return escudoService.getProducts(details.getUsername());
     }
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NewProductDto postProduct(@AuthenticationPrincipal UserDetails details, 
-                                  @RequestBody NewProductDto productDto) {
+    public ProductDto postProduct(@AuthenticationPrincipal UserDetails details, 
+                                  @RequestBody ProductDto productDto) {
         try {
             return escudoService.addNewProduct(productDto, details.getUsername());
         } catch (DuplicateProductException e) {
@@ -51,31 +49,27 @@ public class ProductController {
         }
     }
 
-    @PatchMapping("/{productId}")
+    @PatchMapping("/{productName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchProduct(@AuthenticationPrincipal UserDetails details,
-                                          @PathVariable Long productId,
+                                          @PathVariable String productName,
                                           @RequestBody ProductPatchDto productDto) {
         try {
-            escudoService.updateProduct(details.getUsername(), productId, productDto);
+            escudoService.updateProduct(details.getUsername(), productName, productDto);
         } catch (ProductNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
         } catch (DuplicateProductException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/{productName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@AuthenticationPrincipal UserDetails details, @PathVariable Long productId) {
+    public void deleteProduct(@AuthenticationPrincipal UserDetails details, @PathVariable String productName) {
         try {
-            escudoService.deleteProduct(details.getUsername(), productId);
+            escudoService.deleteProduct(details.getUsername(), productName);
         } catch (ProductNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage(), e);
         }
     }
 }
