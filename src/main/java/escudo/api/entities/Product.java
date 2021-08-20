@@ -1,7 +1,7 @@
 package escudo.api.entities;
 
 
-import escudo.api.dtos.NewProductDto;
+import escudo.api.dtos.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,12 +31,16 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Purchase> purchases = new ArrayList<>();
 
+
+    @Embedded
+    private ProductSummary summary = new ProductSummary();
+
     /**
      * Construct entity from dto sended by web client
      * dto includes name only
      * @param dto
      */
-    public Product(NewProductDto dto) {
+    public Product(ProductDto dto) {
         this.name = dto.getName();
     }
 }
