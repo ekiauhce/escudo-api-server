@@ -2,7 +2,6 @@ package escudo.api.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,9 +13,9 @@ import escudo.api.dtos.ProductPatchDto;
 import escudo.api.dtos.PurchaseCreationReportDto;
 import escudo.api.dtos.PurchaseDeletionReportDto;
 import escudo.api.dtos.PurchaseDto;
+import escudo.api.dtos.PurchasesSummaryDto;
 import escudo.api.entities.Buyer;
 import escudo.api.entities.Product;
-import escudo.api.entities.ProductSummary;
 import escudo.api.entities.Purchase;
 import escudo.api.exceptions.DuplicateProductException;
 import escudo.api.exceptions.ProductNotFoundException;
@@ -106,10 +105,18 @@ public class EscudoService {
         purchase.setProduct(product);
         purchase = purchaseRepo.save(purchase);
 
-        ProductSummary summary = new ProductSummary(avgCPD(product), avgLifespan(product));
-        product.setSummary(summary);
+        PurchasesSummaryDto summaryDto = new PurchasesSummaryDto();
+        summaryDto.setAvgCpd(purchaseRepo.findAvgCpdByProductId(product.getId()));
+        summaryDto.setAvgLifespan(purchaseRepo.findAvgLifespanByProductId(product.getId()));
 
-        return new PurchaseCreationReportDto(purchase);
+        PurchaseCreationReportDto report = new PurchaseCreationReportDto();
+        report.setPurchaseDto(new PurchaseDto(purchase));
+        report.setSummaryDto(summaryDto);
+        report.setLatestPurchaseMadeAt(
+            purchaseRepo.findFirstByProductIdOrderByMadeAtDesc(product.getId()).getMadeAt()
+        );
+
+        return report;
     }
 
 
@@ -125,23 +132,20 @@ public class EscudoService {
             throw new PurchaseNotFoundException("No purchase with this id!", e);
         }
 
-        ProductSummary summary = new ProductSummary(avgCPD(product), avgLifespan(product));
-        product.setSummary(summary);
+        productRepo.save(product);
 
-        return new PurchaseDeletionReportDto(product);
+        PurchasesSummaryDto summaryDto = new PurchasesSummaryDto();
+        summaryDto.setAvgCpd(purchaseRepo.findAvgCpdByProductId(product.getId()));
+        summaryDto.setAvgLifespan(purchaseRepo.findAvgLifespanByProductId(product.getId()));
+
+        PurchaseDeletionReportDto report = new PurchaseDeletionReportDto();
+        report.setSummary(summaryDto);
+        report.setLatestPurchaseMadeAt(
+            purchaseRepo.findFirstByProductIdOrderByMadeAtDesc(product.getId()).getMadeAt()
+        );
+
+        return report;
     }
-
-    /**
-     * Calculates average cost per day over all pairs of adjacent purchases
-     * @param product
-     * @return
-     */
-    private double avgCPD(Product product) {
-        List<Purchase> purchases = product.getPurchases();
-        
-        if (purchases.size() < 2) {
-            return 0.0;
-        }
 
     public PurchasesSummaryDto getPurchasesSummary(String username, String productName)
         throws ProductNotFoundException {
