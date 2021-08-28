@@ -143,47 +143,16 @@ public class EscudoService {
             return 0.0;
         }
 
-        double[] costs = new double[purchases.size() - 1];
+    public PurchasesSummaryDto getPurchasesSummary(String username, String productName)
+        throws ProductNotFoundException {
         
-        Purchase prev, next;
-        for (int i = 0; i < purchases.size() - 1; i++) {
-            prev = purchases.get(i);
-            next = purchases.get(i + 1);
-            costs[i] = prev.getPrice() / lifespan(prev, next);
-        }
+        Product product = productRepo.findByBuyerUsernameAndName(username, productName)
+            .orElseThrow(() -> new ProductNotFoundException("No product with this name!"));
 
-        return DoubleStream.of(costs).average()
-            .orElse(0.0);
-    }
+        PurchasesSummaryDto summaryDto = new PurchasesSummaryDto();
+        summaryDto.setAvgCpd(purchaseRepo.findAvgCpdByProductId(product.getId()));
+        summaryDto.setAvgLifespan(purchaseRepo.findAvgLifespanByProductId(product.getId()));
 
-    /**
-     * Calculates average lifespan over all pairs of adjacent purchases
-     * @param product
-     * @return
-     */
-    private double avgLifespan(Product product) {
-        List<Purchase> purchases = product.getPurchases();
-
-        if (purchases.size() < 2) {
-            return 0.0;
-        }
-
-        double[] lifespans = new double[purchases.size() -1];
-
-        Purchase prev, next;
-        for (int i = 0; i < purchases.size() - 1; i++) {
-            prev = purchases.get(i);
-            next = purchases.get(i + 1);
-            lifespans[i] = lifespan(prev, next);
-        }
-
-        return DoubleStream.of(lifespans).average()
-            .orElse(0.0);
-    }
-
-    // in days
-    private double lifespan(Purchase prev, Purchase next) {
-        double millis = next.getMadeAt() - prev.getMadeAt();
-        return  millis / (1000 * 60 * 60 * 24);
+        return summaryDto;
     }
 }

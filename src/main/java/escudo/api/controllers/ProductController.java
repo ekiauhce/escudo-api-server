@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import escudo.api.dtos.ProductDto;
 import escudo.api.dtos.ProductPatchDto;
+import escudo.api.dtos.PurchasesSummaryDto;
 import escudo.api.exceptions.DuplicateProductException;
 import escudo.api.exceptions.ProductNotFoundException;
 import escudo.api.services.EscudoService;
@@ -68,6 +69,16 @@ public class ProductController {
     public void deleteProduct(@AuthenticationPrincipal UserDetails details, @PathVariable String productName) {
         try {
             escudoService.deleteProduct(details.getUsername(), productName);
+        } catch (ProductNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping("/{productName}/summary")
+    @ResponseStatus(HttpStatus.OK)
+    public PurchasesSummaryDto getSummary(@AuthenticationPrincipal UserDetails details, @PathVariable String productName) {
+        try {
+            return escudoService.getPurchasesSummary(details.getUsername(), productName);
         } catch (ProductNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
