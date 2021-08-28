@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Formula;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +34,12 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Purchase> purchases = new ArrayList<>();
 
-
-    @Embedded
-    private ProductSummary summary = new ProductSummary();
+    @Formula(
+    "(select purchases.made_at from purchases " +
+    "where purchases.product_id = id " +
+    "order by purchases.made_at desc " +
+    "limit 1)")
+    private Long latestPurchaseMadeAt;
 
     /**
      * Construct entity from dto sended by web client
