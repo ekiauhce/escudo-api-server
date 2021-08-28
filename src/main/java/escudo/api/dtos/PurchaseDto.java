@@ -1,11 +1,13 @@
 package escudo.api.dtos;
 
 import escudo.api.entities.Purchase;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PurchaseDto {
     
     private Long id;
